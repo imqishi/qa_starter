@@ -2,7 +2,7 @@
   <div id="app">
     <router-view></router-view>
     <group>
-      <cell title="单选题" value="每个题目仅一个选项正确，每题2分，共160分"></cell>
+      <cell title="单选题" :value="'每个题目仅一个选项正确，每题'+selectScore+'分，共'+selectScore*form.selectAns.length+'分'"></cell>
     </group>
     <div v-for="(ans, idx) in form.selectAns" :key="'sa' + idx">
       <checklist :title="'问题'+ (idx + 1) +'：' + selectData[idx].Problem" :label-position="'right'" required :max="1"
@@ -17,7 +17,7 @@
         -->
     </div>
     <group>
-      <cell title="多选题" value="每个题目有一个或多个选项正确，每题3分，共60分"></cell>
+      <cell title="多选题" :value="'每个题目有一个或多个选项正确，每题'+multiSelectScore+'分，共'+multiSelectScore*form.multiSelectAns.length+'分'"></cell>
     </group>
     <div v-for="(ans, idx) in form.multiSelectAns" :key="'msa' + idx">
       <checklist :title="'问题'+ (idx + 1) +'：' + multiSelectData[idx].Problem" :label-position="'right'" required
@@ -32,21 +32,21 @@
       </group>
         -->
     </div>
-    <!--
-    <group>
-      <cell title="判断题" value="请选择正确或错误，每题1分，共10分"></cell>
+    <group v-if="form.yesAns.length > 0">
+      <cell title="判断题" :value="'请选择正确或错误，每题'+yesScore+'分，共'+yesScore*form.yesAns.length+'分'"></cell>
     </group>
     <div v-for="(ans, idx) in form.yesAns" :key="'ya' + idx">
       <checklist :title="'问题'+ (idx + 1) +'：' + yesData[idx].Problem"
-        :label-position="'right'" required :max="1" :min="1" :options="[{key: 1, value: '正确'}, {key: 0, value: '错误'}]" v-model="ans.value"></checklist>
+        :label-position="'right'" required :max="1" :min="1" :options="yesData[idx].Opts" v-model="ans.value"></checklist>
+      <!--
       <group>
         <cell v-show="hasSubmit"
           :title="singleAnsRight(ans.value[0], yesData[idx].RightAns[0]) ? '恭喜您答对了':'回答错误，答案应为'+(yesData[idx].RightAns[0] === 1 ? '正确': '错误')"
           :style="{color: singleAnsRight(ans.value[0], yesData[idx].RightAns[0]) ? 'green':'red'}">
         </cell>
       </group>
+      -->
     </div>
-    -->
     <x-button type="primary" @click.native="submitQuestion">提交作答</x-button>
     <div v-show="hasSubmit">
       <group>
@@ -82,6 +82,19 @@
           </cell>
         </group>
       </div>
+      <group v-show="yesErrIdx.length != 0">
+        <cell title="判断题" value=""></cell>
+      </group>
+      <div v-for="(ans, idx) in yesErrIdx" :key="'yaa' + idx">
+        <checklist :title="'问题'+ (ans + 1) +'：' + yesData[ans].Problem" :label-position="'right'" required :max="1"
+          :min="1" :options="yesData[ans].Opts" v-model="form.yesAns[ans].value" disabled></checklist>
+        <group>
+          <cell
+            :title="'回答错误，答案应为'+(yesData[ans].Ans[0] === '1' ? '正确': '错误')"
+            :style="{color: 'red'}">
+          </cell>
+        </group>
+      </div>
     </div>
   </div>
 </template>
@@ -98,7 +111,11 @@ export default {
     XButton
   },
   data () {
-    let qData = QData.fetch()
+    let qType = this.$route.query.type
+    if (qType !== '1' && qType !== '2') {
+      qType = '0'
+    }
+    let qData = QData.fetch(qType)
     let selectAns = []
     for (let i = 0; i < qData.selectData.length; i++) {
       selectAns.push({ value: [] })
@@ -110,6 +127,17 @@ export default {
     let yesAns = []
     for (let i = 0; i < qData.yesData.length; i++) {
       yesAns.push({ value: [] })
+    }
+    let selectScore = 2
+    let multiSelectScore = 3
+    let yesScore = 1
+    if (qType === '1') {
+      selectScore = 3
+      multiSelectScore = 5
+      yesScore = 3
+    } else if (qType === '2') {
+      selectScore = 2
+      multiSelectScore = 4
     }
     return {
       form: {
@@ -124,7 +152,10 @@ export default {
       totalScore: 0,
       selErrIdx: [],
       multiSelErrIdx: [],
-      yesErrIdx: []
+      yesErrIdx: [],
+      selectScore: selectScore,
+      multiSelectScore: multiSelectScore,
+      yesScore: yesScore
     }
   },
   methods: {
@@ -134,9 +165,9 @@ export default {
       this.multiSelErrIdx = []
       this.yesErrIdx = []
       let score = 0
-      let selectScore = 2
-      let multiSelectScore = 3
-      let yesScore = 1
+      let selectScore = this.selectScore
+      let multiSelectScore = this.multiSelectScore
+      let yesScore = this.yesScore
       for (let i = 0; i < this.form.selectAns.length; i++) {
         if (this.singleAnsRight(this.form.selectAns[i].value, this.selectData[i].Ans[0])) {
           score += selectScore
