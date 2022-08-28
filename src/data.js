@@ -35878,6 +35878,10 @@ export default {
       selectNum = 60
       multiSelectNum = 25
     }
+    // 临时改成统一单选50，多选20，判断30
+    selectNum = 50
+    multiSelectNum = 20
+    yesNum = 30
     let chooseSelectData = []
     let choosedIdx = {}
     while (true) {
