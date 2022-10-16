@@ -5,21 +5,10 @@ import {getData} from '@/api/data'
 export default {
   fetch: function (qType) {
     // 根据不同套题设置不同出题数
-    let selectNum = 80
+    // 临时改成统一单选20*1.5，多选20*2，判断20*1.5
+    let selectNum = 20
     let multiSelectNum = 20
     let yesNum = 20
-    if (qType === '1') {
-      selectNum = 30
-      multiSelectNum = 14
-      yesNum = 20
-    } else if (qType === '2') {
-      selectNum = 60
-      multiSelectNum = 25
-    }
-    // 临时改成统一单选50，多选20，判断30
-    selectNum = 50
-    multiSelectNum = 20
-    yesNum = 30
     return getData(qType).then(res => {
       return this.selectProblems(res.selectData, res.multiSelectData, res.yesData, selectNum, multiSelectNum, yesNum)
     })

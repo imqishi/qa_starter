@@ -129,7 +129,7 @@ export default {
   },
   mounted () {
     let qType = this.$route.query.type
-    if (qType !== '1' && qType !== '2') {
+    if (qType !== '1' && qType !== '2' && qType !== '11' && qType !== '13') {
       qType = '0'
     }
     QData.fetch(qType).then(qData => {
@@ -145,17 +145,10 @@ export default {
       for (let i = 0; i < qData.yesData.length; i++) {
         yesAns.push({ value: [] })
       }
-      let selectScore = 2
-      let multiSelectScore = 3
-      let yesScore = 1
-      if (qType === '1') {
-        selectScore = 3
-        multiSelectScore = 5
-        yesScore = 3
-      } else if (qType === '2') {
-        selectScore = 2
-        multiSelectScore = 4
-      }
+      // 临时改成统一单选20*1.5，多选20*2，判断20*1.5
+      let selectScore = 1.5
+      let multiSelectScore = 2
+      let yesScore = 1.5
       this.form = {
         selectAns: selectAns,
         multiSelectAns: multiSelectAns,
