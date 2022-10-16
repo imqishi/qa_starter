@@ -127,52 +127,66 @@ export default {
     Group,
     XButton
   },
-  data () {
+  mounted () {
     let qType = this.$route.query.type
     if (qType !== '1' && qType !== '2') {
       qType = '0'
     }
-    let qData = QData.fetch(qType)
-    let selectAns = []
-    for (let i = 0; i < qData.selectData.length; i++) {
-      selectAns.push({ value: [] })
-    }
-    let multiSelectAns = []
-    for (let i = 0; i < qData.multiSelectData.length; i++) {
-      multiSelectAns.push({ value: [] })
-    }
-    let yesAns = []
-    for (let i = 0; i < qData.yesData.length; i++) {
-      yesAns.push({ value: [] })
-    }
-    let selectScore = 2
-    let multiSelectScore = 3
-    let yesScore = 1
-    if (qType === '1') {
-      selectScore = 3
-      multiSelectScore = 5
-      yesScore = 3
-    } else if (qType === '2') {
-      selectScore = 2
-      multiSelectScore = 4
-    }
-    return {
-      form: {
+    QData.fetch(qType).then(qData => {
+      let selectAns = []
+      for (let i = 0; i < qData.selectData.length; i++) {
+        selectAns.push({ value: [] })
+      }
+      let multiSelectAns = []
+      for (let i = 0; i < qData.multiSelectData.length; i++) {
+        multiSelectAns.push({ value: [] })
+      }
+      let yesAns = []
+      for (let i = 0; i < qData.yesData.length; i++) {
+        yesAns.push({ value: [] })
+      }
+      let selectScore = 2
+      let multiSelectScore = 3
+      let yesScore = 1
+      if (qType === '1') {
+        selectScore = 3
+        multiSelectScore = 5
+        yesScore = 3
+      } else if (qType === '2') {
+        selectScore = 2
+        multiSelectScore = 4
+      }
+      this.form = {
         selectAns: selectAns,
         multiSelectAns: multiSelectAns,
         yesAns: yesAns
+      }
+      this.selectData = qData.selectData
+      this.multiSelectData = qData.multiSelectData
+      this.yesData = qData.yesData
+      this.selectScore = selectScore
+      this.multiSelectScore = multiSelectScore
+      this.yesScore = yesScore
+    })
+  },
+  data () {
+    return {
+      form: {
+        selectAns: [],
+        multiSelectAns: [],
+        yesAns: []
       },
-      selectData: qData.selectData,
-      multiSelectData: qData.multiSelectData,
-      yesData: qData.yesData,
+      selectData: [],
+      multiSelectData: [],
+      yesData: [],
       hasSubmit: false,
       totalScore: 0,
       selErrIdx: [],
       multiSelErrIdx: [],
       yesErrIdx: [],
-      selectScore: selectScore,
-      multiSelectScore: multiSelectScore,
-      yesScore: yesScore,
+      selectScore: 1,
+      multiSelectScore: 1,
+      yesScore: 1,
       showProblemSetting: [],
       showProblemOpts: [
         {key: '1', value: '单选'},
