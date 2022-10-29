@@ -129,7 +129,7 @@ export default {
   },
   mounted () {
     let qType = this.$route.query.type
-    if (qType !== '1' && qType !== '2' && qType !== '11' && qType !== '13') {
+    if (qType !== '1' && qType !== '2' && qType !== '11'&& qType !== '12' && qType !== '13') {
       qType = '0'
     }
     QData.fetch(qType).then(qData => {
