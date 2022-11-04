@@ -149,6 +149,11 @@ export default {
       let selectScore = 1.5
       let multiSelectScore = 2
       let yesScore = 1.5
+      if (qType === '3') {
+        selectScore = 1
+        multiSelectScore = 2
+        yesScore = 1
+      }
       this.form = {
         selectAns: selectAns,
         multiSelectAns: multiSelectAns,

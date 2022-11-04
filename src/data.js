@@ -9,6 +9,11 @@ export default {
     let selectNum = 20
     let multiSelectNum = 20
     let yesNum = 20
+    if (qType === '3') {
+      selectNum = 80
+      multiSelectNum = 50
+      yesNum = 40
+    }
     return getData(qType).then(res => {
       return this.selectProblems(res.selectData, res.multiSelectData, res.yesData, selectNum, multiSelectNum, yesNum)
     })
